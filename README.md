@@ -1,3 +1,6 @@
+#  Chatbot_GenAI_API
+https://github.com/jksnu/Chatbot_GenAI_Backend
+
 # My Next.js Project
 
 This is a Next.js project created to demonstrate a simple application structure.
