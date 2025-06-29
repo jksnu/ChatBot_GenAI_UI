@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
+import { getAnswer } from '../services/service'; 
 
 interface QueryFormProps {
   onAnswer: (text: string) => void;
@@ -20,16 +21,8 @@ export function QueryForm({ onAnswer }: QueryFormProps) {
 
     try {
       setLoading(true);
-      const res = await fetch('/api/query', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
-      });
-
-      if (!res.ok) throw new Error();
-
-      const data = await res.json();
-      onAnswer(data.answer);
+      const answer = await getAnswer(query.trim());
+      onAnswer(answer);
     } catch {
       toast.error('Failed to get answer.');
     } finally {
@@ -38,7 +31,7 @@ export function QueryForm({ onAnswer }: QueryFormProps) {
   };
 
   return (
-    <div className="mt-8 p-6 bg-white rounded-2xl shadow-md border border-gray-200 max-w-xl mx-auto">
+    <div className="w-full mt-8 p-6 bg-white rounded-2xl shadow-md border border-gray-200 max-w-xl mx-auto">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Ask a Question</h2>
       <div className="flex flex-col sm:flex-row gap-4">
         <input

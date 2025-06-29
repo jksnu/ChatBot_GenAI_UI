@@ -2,22 +2,24 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
+import { deleteFile, getUploadedFiles } from '../services/service';
 
-interface Doc {
-  id: string;
-  name: string;
+interface ListDocsProps {
+  refreshTrigger: boolean;
 }
 
-export function ListDocs() {
-  const [docs, setDocs] = useState<Doc[]>([]);
+export function ListDocs({refreshTrigger}: ListDocsProps) {
+  const [docs, setDocs] = useState<string []>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDocs = async () => {
     try {
-      const res = await fetch('/api/docs');
-      const data = await res.json();
-      setDocs(data);
+      const filenames: string [] = await getUploadedFiles();
+      if(filenames) {
+        setDocs(filenames);
+      } 
+      
     } catch (error) {
       toast.error('Failed to load documents.');
     } finally {
@@ -27,10 +29,9 @@ export function ListDocs() {
 
   const deleteDoc = async (id: string) => {
     try {
-      const res = await fetch(`/api/docs/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
+      await deleteFile(id);
       toast.success('Document deleted.');
-      setDocs(docs.filter(doc => doc.id !== id));
+      setDocs(docs.filter(doc => doc !== id)); 
     } catch {
       toast.error('Failed to delete document.');
     }
@@ -38,7 +39,7 @@ export function ListDocs() {
 
   useEffect(() => {
     fetchDocs();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div className="mt-8 p-6 bg-white rounded-2xl shadow-md border border-gray-200 max-w-xl mx-auto">
@@ -50,10 +51,10 @@ export function ListDocs() {
       ) : (
         <ul className="space-y-3">
           {docs.map((doc) => (
-            <li key={doc.id} className="flex justify-between items-center px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <span className="text-sm text-gray-700 truncate max-w-[70%]">{doc.name}</span>
+            <li key={doc} className="flex justify-between items-center px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <span className="text-sm text-gray-700 truncate max-w-[70%]">{doc}</span>
               <button
-                onClick={() => deleteDoc(doc.id)}
+                onClick={() => deleteDoc(doc)}
                 className="text-sm text-red-600 hover:text-red-800 font-medium"
               >
                 Delete

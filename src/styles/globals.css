@@ -1,8 +1,4 @@
-/* styles/globals.css */
-/* Make sure this file is processed by Tailwind CSS via PostCSS, not loaded directly in the browser */
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
+@import 'tailwindcss';
 
 html, body {
   padding: 0;
